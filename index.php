@@ -47,16 +47,46 @@ switch( $action ) {
         break;
 
     
- //   case 'Save Changes':
-    
- //   case 'Cancel Changes':
-    
- //   case 'Promote Task':
-        
-  //  case 'Sort Tasks':
-    
+    case 'Save Changes':
+        $i = filter_input(INPUT_POST, 'modifiedtaskid', FILTER_VALIDATE_INT);
+        $modified_task = filter_input(INPUT_POST, 'modifiedtask');
+        if (empty($modified_task)) {
+            $errors[] = 'The modified task cannot be empty.';
+        } elseif($i === NULL || $i === FALSE) {
+            $errors[] = 'The task cannot be modified.';        
+        } else {
+            $task_list[$i] = $modified_task;
+            $modified_task = '';
+        }
+        break;
 
+    
+    case 'Cancel Changes':
+        $modified_task = '';
+        break;
+
+    case 'Promote Task':
+        $task_index = filter_input(INPUT_POST, 'taskid', FILTER_VALIDATE_INT);
+        if ($task_index === NULL || $task_index === FALSE) {
+            $errors[] = 'The task cannot be promoted.';
+        } elseif ($task_index == 0) {
+            $errors[] = 'You can\'t promote the first task.';
+        } else {
+            $task_value = $task_list[$task_index];
+            $prior_task_value = $task_list[$task_index-1];            
+            $task_list[$task_index-1] = $task_value;
+            $task_list[$task_index] = $prior_task_value;
+            break;
+        }
+
+
+    case 'Sort Tasks':
+        sort($task_list);
+        break;
 }
+
+
+
 
 include('task_list.php');
 ?>
